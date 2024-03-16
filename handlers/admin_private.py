@@ -14,6 +14,7 @@ from database.orm_query import (
 )
 
 from filters.chat_types import ChatTypeFilter, IsAdmin
+from kbds.inline import get_callback_btns
 
 # from kbds.inline import get_callback_btns
 from kbds.reply import get_keyboard
@@ -60,7 +61,11 @@ async def starring_at_product(message: types.Message, session: AsyncSession):
             product.image,
             caption=f"<strong>{product.name}\
                     </strong>\n{product.description}\nСтоимость: {round(product.price, 2)}",
-            parse_mode="HTML"
+            parse_mode="HTML",
+            reply_markup=get_callback_btns(btns={
+                'Удалить': f'delete_{product.id}',
+                'Изменить': f'change_{product.id}'
+            })
 
         )
     await message.answer("ОК, вот список товаров ⏫")
@@ -235,4 +240,4 @@ async def add_image(message: types.Message, state: FSMContext, session: AsyncSes
 
 @admin_router.message(AddProduct.image)
 async def add_image2(message: types.Message, state: FSMContext):
-    await message.answer("Отправьте фото пищи")
+    await message.answer("Отправьте фото товара")
